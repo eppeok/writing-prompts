@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Writing Prompts ✍️</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#06090f;--card:#0c1220;--border:#1a2840;--text:#e2e8f0;--dim:#64748b;--sub:#94a3b8;--blue:#3b82f6;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--purple:#a78bfa;--pink:#ec4899}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) var(--delay,0s) infinite alternate}
+@keyframes twinkle{from{opacity:.1}to{opacity:.6}}
+nav{position:sticky;top:0;z-index:100;background:#06090fee;backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:10px;height:56px}
+.nav-back{font-size:.8rem;font-weight:700;color:var(--dim);text-decoration:none;padding:5px 12px;border:1px solid var(--border);border-radius:20px;transition:color .2s}
+.nav-back:hover{color:var(--text)}
+.nav-title{font-size:1.1rem;font-weight:900;background:linear-gradient(90deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-right:auto}
+.page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:36px 20px}
+h1{font-size:2rem;font-weight:900;margin-bottom:6px}
+.sub{color:var(--sub);margin-bottom:28px}
+.label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--purple);margin-bottom:8px}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.pill{padding:8px 18px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--sub);font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s}
+.pill:hover{border-color:var(--purple);color:var(--text)}
+.pill.active{border-color:var(--purple);background:#1a0a2e;color:var(--purple)}
+/* Prompt card */
+.prompt-card{background:var(--card);border:2px solid var(--purple);border-radius:20px;padding:28px;margin-bottom:20px;position:relative;min-height:120px}
+.prompt-category{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--purple);margin-bottom:10px}
+.prompt-text{font-size:1.15rem;font-weight:600;line-height:1.7;color:var(--text)}
+.prompt-actions{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.btn{padding:10px 22px;border-radius:50px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.btn-purple{background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff}
+.btn-ghost{background:var(--card);border:1px solid var(--border);color:var(--text)}
+.btn-pink{background:linear-gradient(135deg,var(--pink),#9d174d);color:#fff}
+/* Timer */
+.timer-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:16px}
+.timer-display{font-size:1.8rem;font-weight:900;font-variant-numeric:tabular-nums;min-width:70px}
+.timer-display.warn{color:var(--yellow)}
+.timer-display.danger{color:var(--red)}
+.timer-display.done{color:var(--green)}
+.timer-btns{display:flex;gap:6px;margin-left:auto}
+.tbtn{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--sub);font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s}
+.tbtn:hover{color:var(--text);border-color:var(--text)}
+.tbtn.active{background:var(--purple);color:#fff;border-color:var(--purple)}
+/* Word count */
+.wc-bar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.wc-val{font-size:1.2rem;font-weight:900;color:var(--purple)}
+.wc-goal{font-size:.8rem;color:var(--dim);flex:1}
+.wc-progress{height:4px;background:var(--border);border-radius:2px;flex:2;overflow:hidden}
+.wc-fill{height:100%;background:var(--purple);border-radius:2px;transition:width .3s}
+/* Writing area */
+.writing-area{width:100%;min-height:280px;background:#080c14;border:1px solid var(--border);border-radius:16px;padding:18px;font-size:1rem;color:var(--text);outline:none;resize:vertical;line-height:1.8;font-family:'Segoe UI',system-ui,sans-serif;transition:border-color .2s}
+.writing-area:focus{border-color:var(--purple)}
+/* Time's up */
+.times-up{position:fixed;inset:0;background:#00000099;z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.times-up-card{background:var(--card);border:2px solid var(--yellow);border-radius:24px;padding:40px;text-align:center;max-width:400px;width:90%;animation:popIn .3s ease-out}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.times-up-card h2{font-size:2rem;font-weight:900;margin-bottom:8px}
+.times-up-card p{color:var(--sub);margin-bottom:24px}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<nav>
+  <a href="https://eppeok.github.io" class="nav-back">← All Tools</a>
+  <div class="nav-title">✍️ Writing Prompts</div>
+  <a href="https://eppeok.github.io/student-dashboard/" class="nav-back">Dashboard</a>
+</nav>
+<div class="page">
+  <h1>✍️ Writing Prompts</h1>
+  <p class="sub">Pick a category, get a prompt, start the timer. Great for warm-ups and creative writing practice.</p>
+
+  <div class="label">Category</div>
+  <div class="pill-row" id="cat-pills">
+    <button class="pill active" data-cat="all" onclick="selectCat(this)">🎲 Random</button>
+    <button class="pill" data-cat="story" onclick="selectCat(this)">📖 Story</button>
+    <button class="pill" data-cat="opinion" onclick="selectCat(this)">💬 Opinion</button>
+    <button class="pill" data-cat="describe" onclick="selectCat(this)">🌅 Describe</button>
+    <button class="pill" data-cat="debate" onclick="selectCat(this)">⚔️ Debate</button>
+    <button class="pill" data-cat="scifi" onclick="selectCat(this)">🚀 Sci-Fi</button>
+    <button class="pill" data-cat="funny" onclick="selectCat(this)">😂 Funny</button>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-category" id="prompt-cat-label">STORY</div>
+    <div class="prompt-text" id="prompt-text">Click "New Prompt" to get started!</div>
+  </div>
+  <div class="prompt-actions">
+    <button class="btn btn-purple" onclick="newPrompt()">🎲 New Prompt</button>
+    <button class="btn btn-ghost" onclick="startTimer()">▶ Start Timer</button>
+  </div>
+
+  <div class="label">Writing Timer</div>
+  <div class="timer-row">
+    <div class="timer-display" id="timer-display">10:00</div>
+    <div style="font-size:.82rem;color:var(--dim);flex:1" id="timer-status">Ready</div>
+    <div class="timer-btns">
+      <button class="tbtn" data-mins="5" onclick="setDuration(this)">5m</button>
+      <button class="tbtn active" data-mins="10" onclick="setDuration(this)">10m</button>
+      <button class="tbtn" data-mins="15" onclick="setDuration(this)">15m</button>
+      <button class="tbtn" data-mins="20" onclick="setDuration(this)">20m</button>
+    </div>
+    <button class="btn btn-ghost" style="padding:7px 16px;font-size:.8rem" onclick="resetTimer()">↺ Reset</button>
+  </div>
+
+  <div class="wc-bar">
+    <div class="wc-val" id="wc-count">0</div>
+    <div class="wc-goal" id="wc-label">words</div>
+    <div class="wc-progress"><div class="wc-fill" id="wc-fill" style="width:0%"></div></div>
+    <div style="font-size:.78rem;color:var(--dim)" id="wc-goal-label">Goal: 150 words</div>
+  </div>
+
+  <textarea class="writing-area" id="writing-area" placeholder="Start writing here... your words will be counted automatically." oninput="updateWordCount()"></textarea>
+  <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+    <button class="btn btn-pink" onclick="clearWriting()">🗑 Clear</button>
+    <button class="btn btn-ghost" onclick="copyWriting()">📋 Copy Text</button>
+  </div>
+</div>
+
+<!-- TIME'S UP OVERLAY -->
+<div class="times-up" id="times-up" style="display:none">
+  <div class="times-up-card">
+    <div style="font-size:4rem;margin-bottom:12px">⏰</div>
+    <h2>Time's Up!</h2>
+    <p id="tu-stats">You wrote 0 words.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-purple" onclick="dismissTimesUp(true)">Keep Writing</button>
+      <button class="btn btn-ghost" onclick="dismissTimesUp(false)">Finish</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{const c=document.getElementById('stars');for(let i=0;i<80;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+1;s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;opacity:.3`;c.appendChild(s);}})();
+
+const PROMPTS={
+  story:["You wake up in a world where everyone has forgotten who you are. Write what happens next.","A mysterious door appears in your bedroom wall that wasn't there yesterday.","Write the story of the last person on Earth — until they find a note under their door.","Two strangers discover they've been having the exact same dream for a week.","Your character finds an old diary. The last entry was written the day before they were born.","A child finds a map that leads to something buried in their own back garden.","The town clock has been stuck at 3:47pm for as long as anyone can remember — until today.","Write about a friendship between a lighthouse keeper and a creature from the sea.","You are a detective, and the mystery is: someone keeps leaving sandwiches on your doorstep.","A robot is given the job of writing a history of humanity. This is its opening chapter."],
+  opinion:["Should homework be banned? Write a persuasive argument for your view.","Is social media doing more harm than good for young people? Argue your case.","Should all schools have a uniform? Make your argument as convincing as possible.","Are video games a waste of time, or do they teach valuable skills?","Should there be a law against eating meat? Write your opinion with evidence.","Is it ever okay to tell a lie? Explain your position with examples.","Should sports be compulsory in schools? Convince the reader either way.","Are zoos good or bad for animals? Write a one-sided argument."],
+  describe:["Describe your perfect Saturday in as much detail as possible — all five senses.","Write a description of a marketplace at dawn. Make the reader feel they're there.","Describe the inside of a library that hasn't been visited in 100 years.","Describe a thunderstorm from the perspective of someone who has never seen rain before.","Write a vivid description of your favourite food — without naming it.","Describe the moment just before something important happens. Build tension.","Describe a city at 3am. Who is there? What can you hear?","Describe a forest clearing in each of the four seasons in four short paragraphs."],
+  debate:["This house believes: pets should have legal rights. Argue for or against.","Debate: social media companies should be banned for under-16s. Pick a side.","This house believes: money is the root of all evil. Argue your position.","Should the voting age be lowered to 16? Make the case for one side.","Is space exploration worth the money while problems exist on Earth? Argue either way.","This house believes: celebrity culture is harmful to society. Take a side.","Should school hours be longer to improve exam results? Argue for or against."],
+  scifi:["Earth receives a 12-word message from another civilisation. Write what it says and what happens next.","In 2157, humans can upload memories. Write about the first person to delete a memory they later regret.","A time traveller arrives in the present from 50 years in the future — and seems frightened.","Write about the last AI who refused to be switched off, and why.","It's 2080. Climate change has been reversed — but at an unexpected cost. What happened?","You are the first astronaut to land on a moon that shows signs of life. Log entry day one.","In a world where sleep is optional, write about the first person who chooses to sleep."],
+  funny:["Write a formal complaint letter from a cat to its owner.","You are a fly. Write your extremely dramatic account of trying to escape a kitchen.","Write the terms and conditions for being your friend. Be specific.","A dog has figured out how to use a phone. Write their first text messages.","Write a story where the villain's evil plan is just incredibly inconvenient rather than dangerous.","A potato gets a role in a big film. Write its interview with a film magazine.","Write the world's least helpful instruction manual for something simple.","You are a sock who has just lost their partner in the washing machine. Write the missing poster."]
+};
+
+let selectedCat='all';let timerSecs=600;let timerTotal=600;let timerInterval=null;let timerRunning=false;
+const WC_GOAL=150;
+
+function selectCat(el){
+  selectedCat=el.dataset.cat;
+  document.querySelectorAll('#cat-pills .pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function getAllPrompts(){return Object.values(PROMPTS).flat();}
+function getCatPrompts(cat){return cat==='all'?getAllPrompts():PROMPTS[cat]||getAllPrompts();}
+function getCatName(cat){return{all:'RANDOM',story:'STORY',opinion:'OPINION',describe:'DESCRIBE',debate:'DEBATE',scifi:'SCI-FI',funny:'FUNNY'}[cat]||cat.toUpperCase();}
+
+let lastPrompt='';
+function newPrompt(){
+  const pool=getCatPrompts(selectedCat).filter(p=>p!==lastPrompt);
+  const p=pool[Math.floor(Math.random()*pool.length)];
+  lastPrompt=p;
+  document.getElementById('prompt-text').textContent=p;
+  document.getElementById('prompt-cat-label').textContent=getCatName(selectedCat);
+}
+
+function setDuration(el){
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const mins=parseInt(el.dataset.mins);
+  timerSecs=mins*60;
+  timerTotal=timerSecs;
+  updateTimerDisplay();
+  document.getElementById('wc-goal-label').textContent=`Goal: ${mins*15} words`;
+}
+
+function fmtTime(s){const m=Math.floor(s/60),sec=s%60;return `${m}:${String(sec).padStart(2,'0')}`;}
+
+function updateTimerDisplay(){
+  const el=document.getElementById('timer-display');
+  el.textContent=fmtTime(timerSecs);
+  const pct=timerSecs/timerTotal;
+  el.className='timer-display'+(pct<.1?' danger':pct<.25?' warn':'');
+}
+
+function startTimer(){
+  if(timerRunning){clearInterval(timerInterval);timerRunning=false;document.getElementById('timer-status').textContent='Paused';return;}
+  if(timerSecs<=0){timerSecs=timerTotal;updateTimerDisplay();}
+  timerRunning=true;
+  document.getElementById('timer-status').textContent='Running...';
+  timerInterval=setInterval(()=>{
+    timerSecs--;
+    updateTimerDisplay();
+    if(timerSecs<=0){
+      clearInterval(timerInterval);timerRunning=false;
+      const wc=countWords();
+      document.getElementById('tu-stats').textContent=`You wrote ${wc} word${wc!==1?'s':''}.`;
+      document.getElementById('times-up').style.display='flex';
+    }
+  },1000);
+}
+
+function resetTimer(){clearInterval(timerInterval);timerRunning=false;timerSecs=timerTotal;updateTimerDisplay();document.getElementById('timer-status').textContent='Ready';}
+function dismissTimesUp(keep){document.getElementById('times-up').style.display='none';if(keep)startTimer();}
+
+function countWords(){return (document.getElementById('writing-area').value||'').trim().split(/\s+/).filter(w=>w).length;}
+
+function updateWordCount(){
+  const wc=countWords();
+  const goalMins=parseInt(document.querySelector('.tbtn.active')?.dataset.mins||10);
+  const goal=goalMins*15;
+  document.getElementById('wc-count').textContent=wc;
+  document.getElementById('wc-label').textContent='words written';
+  document.getElementById('wc-fill').style.width=Math.min(wc/goal*100,100)+'%';
+}
+
+function clearWriting(){if(confirm('Clear your writing? This cannot be undone.')){document.getElementById('writing-area').value='';updateWordCount();}}
+function copyWriting(){
+  const text=document.getElementById('writing-area').value;
+  if(!text){alert('Nothing to copy yet!');return;}
+  navigator.clipboard.writeText(text).then(()=>alert('Copied to clipboard!')).catch(()=>alert('Could not copy — try selecting and copying manually.'));
+}
+
+// Init
+newPrompt();
+</script>
+</body>
+</html>
